@@ -2,7 +2,7 @@ import prettytable as prettytable
 import random as rnd
 import pandas as pd
 import numpy as np
-POPULATION_SIZE = 9
+POPULATION_SIZE = 20
 NUMB_OF_ELITE_SCHEDULES = 1
 TOURNAMENT_SELECTION_SIZE = 3
 MUTATION_RATE = 0.1

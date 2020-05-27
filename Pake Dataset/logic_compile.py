@@ -10,14 +10,20 @@ totalsemester = 8
 countdosen = 1
 countwaktu = 1
 namadosen = []
+matakuliah = []
 kelas = []
 waktu = []
+kode = []
 nd = []
 nk = []
 t = []
 penampungkelas = []
 penampungdosen = []
 penampungwaktu = []
+penampungkode = []
+penampungmatakuliah = []
+penampungdosen = []
+penampungdosenajar = []
 while j < totalsemester:
     table = prettytable.PrettyTable(
         ['Semester ' + str(j), 'Nama dosen'])
@@ -25,6 +31,7 @@ while j < totalsemester:
     arr = data.values.tolist()
     for i in range(len(arr)):
         hitung = arr[i]
+        # semester berapa
         if j == 1:
             if hitung[0] not in penampungdosen:
                 # print(nd)
@@ -53,8 +60,20 @@ while j < totalsemester:
                 t.append(gabungan)
                 waktu.append(t)
                 countwaktu = countwaktu + 1
+            k = hitung[8]
+            # cari kode mata kuliah
+            if [hitung[8]] not in kode:
+                kode.append([hitung[8]])
+            # cari matakuliah berdasarkan kode
+            if [hitung[8]] in kode:
+                if [hitung[1]] not in matakuliah:
+                    matakuliah.append([hitung[1]])
+            if hitung[1] == 'IF 100 Dasar-Dasar Pemrograman':
+                if hitung[0] not in penampungdosenajar:
+                    penampungdosenajar.append(hitung[0])
         table.add_row([arr[i], hitung[0]])
     j += 1
+
     print(table)
 # print(waktu)
 # print('\n')
@@ -62,3 +81,8 @@ while j < totalsemester:
 # print('\n')
 # print(kelas)
 # print('\n')
+print(kode)
+print('\n')
+print(matakuliah)
+print('\n')
+print(penampungdosenajar)
