@@ -80,7 +80,7 @@ while j < totalsemester:
     j += 1
 
     # print(table)
-print(waktu)
+# print(waktu)
 # print('\n')
 # print(namadosen)
 # print('\n')
@@ -94,5 +94,7 @@ print(waktu)
 # print('\n')
 # print(matakuliahdandosen)
 
-# for i in range(len(matakuliahdandosen)):
-#     print(matakuliahdandosen[i], "\n")
+for i in range(len(matakuliahdandosen)):
+    idcourse = "C" + str(i)
+    matakuliahdandosen[i].append(idcourse)
+    print(matakuliahdandosen[i], "\n")

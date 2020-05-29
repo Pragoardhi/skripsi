@@ -82,6 +82,9 @@ while j < totalsemester:
         table.add_row([arr[i], hitung[0]])
 
     j += 1
+for i in range(len(matakuliahdandosen)):
+    idcourse = "C" + str(i)
+    matakuliahdandosen[i].append(idcourse)
 
 
 class Data:
@@ -94,10 +97,10 @@ class Data:
         self._rooms = []
         self._meetingTimes = []
         self._instructors = []
-        self._courses = []
-        self._depts = []
         kodedepartment = []
         departmentdancourse = []
+        newarraycourse = []
+        newarraydept = []
         for i in range(0, len(self.ROOMS)):
             self._rooms.append(Room(self.ROOMS[i][0], self.ROOMS[i][1]))
         for i in range(0, len(self.MEETING_TIMES)):
@@ -119,11 +122,11 @@ class Data:
         #     "C6", "303K", [self._instructors[0], self._instructors[2]], 30)
         # course7 = Course(
         #     "C7", "303L", [self._instructors[1], self._instructors[3]], 30)
+
         for i in range(len(matakuliahdandosen)):
-            idcourse = "C" + str(i)
             course = Course(
-                idcourse, matakuliahdandosen[i][0], matakuliahdandosen[i][1], 30)
-            self._courses.append(course)
+                matakuliahdandosen[i][3], matakuliahdandosen[i][0], matakuliahdandosen[i][1], 30)
+            newarraycourse.append(course)
             if matakuliahdandosen[i][2] not in kodedepartment:
                 kodedepartment.append(matakuliahdandosen[i][2])
                 departmentdancourse.append(
@@ -132,17 +135,21 @@ class Data:
                 departindeks = kodedepartment.index(matakuliahdandosen[i][2])
                 if course not in matakuliahdandosen[departindeks][1]:
                     matakuliahdandosen[departindeks][1].append(course)
+        self._courses = newarraycourse
         # self._courses = [course1, course2, course3,
         #                  course4, course5, course6, course7]
+
         for i in range(len(departmentdancourse)):
             dept = Department(
                 departmentdancourse[i][0], departmentdancourse[i][1])
-            self._depts.append(dept)
+            newarraydept.append(dept)
         # dept1 = Department("MATH", [course1, course3])
         # dept2 = Department("EE", [course2, course4, course5])
         # dept3 = Department("PHY", [course6, course7])
         # self._depts = [dept1, dept2, dept3]
+        self._depts = newarraydept
         self._numberOfClasses = 0
+        print(len(self._depts))
         for i in range(0, len(self._depts)):
             self._numberOfClasses += len(self._depts[i].get_courses())
 
@@ -348,6 +355,11 @@ class Class:
     def set_room(self, room): self._room = room
 
     def __str__(self):
+        # print("department: ", self._dept.get_name())
+        # print("course: ", self._course.get_number())
+        # print("room: ", self._self._room.get_number())
+        # print("instructor: ", self._instructor.get_id())
+        # print("meeting time: ", self._meetingTime.get_id())
         return str(self._dept.get_name()) + "," + str(self._course.get_number()) + "," + \
             str(self._room.get_number()) + "," + str(self._instructor.get_id()
                                                      ) + "," + str(self._meetingTime.get_id())
