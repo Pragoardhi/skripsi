@@ -33,7 +33,7 @@ while j < totalsemester:
     for i in range(len(arr)):
         hitung = arr[i]
         # semester berapa
-        if j == 1:
+        if j == 2:
             if hitung[0] not in penampungdosen:
                 # print(nd)
                 iddosen = "I" + str(countdosen)

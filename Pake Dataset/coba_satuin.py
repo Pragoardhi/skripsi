@@ -37,7 +37,7 @@ while j < totalsemester:
     for i in range(len(arr)):
         hitung = arr[i]
         # semester berapa
-        if j == 1:
+        if j == 2:
             if hitung[0] not in penampungdosen:
                 # print(nd)
                 iddosen = "I" + str(countdosen)
@@ -134,7 +134,7 @@ class Data:
             else:
                 departindeks = kodedepartment.index(matakuliahdandosen[i][2])
                 if course not in matakuliahdandosen[departindeks][1]:
-                    matakuliahdandosen[departindeks][1].append(course)
+                    departmentdancourse[departindeks][1].append(course)
         self._courses = newarraycourse
         # self._courses = [course1, course2, course3,
         #                  course4, course5, course6, course7]
@@ -149,7 +149,6 @@ class Data:
         # self._depts = [dept1, dept2, dept3]
         self._depts = newarraydept
         self._numberOfClasses = 0
-        print(len(self._depts))
         for i in range(0, len(self._depts)):
             self._numberOfClasses += len(self._depts[i].get_courses())
 
