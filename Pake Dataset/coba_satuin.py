@@ -13,7 +13,7 @@ j = 1
 totalsemester = 8
 countdosen = 1
 countwaktu = 1
-namadosen = []
+dosen = []
 matakuliah = []
 kelas = []
 waktu = []
@@ -37,14 +37,14 @@ while j < totalsemester:
     for i in range(len(arr)):
         hitung = arr[i]
         # semester berapa
-        if j == 2:
+        if j == 1:
             if hitung[0] not in penampungdosen:
                 # print(nd)
                 iddosen = "I" + str(countdosen)
                 nd = [iddosen]
                 penampungdosen.append(hitung[0])
                 nd.append(hitung[0])
-                namadosen.append(nd)
+                dosen.append(nd)
                 countdosen = countdosen + 1
             if hitung[6] not in penampungkelas:
                 # print('ketemu')
@@ -88,18 +88,19 @@ for i in range(len(matakuliahdandosen)):
 
 
 class Data:
-
     ROOMS = kelas
     MEETING_TIMES = waktu
-    INSTRUCTORS = namadosen
+    INSTRUCTORS = dosen
 
     def __init__(self):
         self._rooms = []
         self._meetingTimes = []
         self._instructors = []
+        namadosen = []
+        gabunglistpengajar = []
+        newarraycourse = []
         kodedepartment = []
         departmentdancourse = []
-        newarraycourse = []
         newarraydept = []
         for i in range(0, len(self.ROOMS)):
             self._rooms.append(Room(self.ROOMS[i][0], self.ROOMS[i][1]))
@@ -109,6 +110,39 @@ class Data:
         for i in range(0, len(self.INSTRUCTORS)):
             self._instructors.append(Instructor(
                 self.INSTRUCTORS[i][0], self.INSTRUCTORS[i][1]))
+        for i in range(len(dosen)):
+            namadosen.append(dosen[i][1])
+        for i in range(len(matakuliahdandosen)):
+            listpengajar = []
+            for j in range(len(matakuliahdandosen[i][1])):
+                # print(matakuliahdandosen[i][1][j])
+                if matakuliahdandosen[i][1][j] in namadosen:
+                    # print(matakuliahdandosen[i][1][j], namadosen.index(
+                    #     matakuliahdandosen[i][1][j]))
+                    penandacourse = namadosen.index(
+                        matakuliahdandosen[i][1][j])
+                    listpengajar.append(self._instructors[penandacourse])
+                    # penanda = namadosen.index(matakuliahdandosen[i][1][j])
+                    # matakuliahdandosen[i][1][j] = "self._instructors" + str(i)
+            gabunglistpengajar.append(listpengajar)
+        for i in range(len(matakuliahdandosen)):
+            course = Course(
+                matakuliahdandosen[i][3], matakuliahdandosen[i][0], gabunglistpengajar[i], 30)
+            newarraycourse.append(course)
+            if matakuliahdandosen[i][2] not in kodedepartment:
+                kodedepartment.append(matakuliahdandosen[i][2])
+                departmentdancourse.append(
+                    [matakuliahdandosen[i][2], [course]])
+            else:
+                departindeks = kodedepartment.index(matakuliahdandosen[i][2])
+                if course not in matakuliahdandosen[departindeks][1]:
+                    departmentdancourse[departindeks][1].append(course)
+        self._courses = newarraycourse
+        for i in range(len(departmentdancourse)):
+            dept = Department(
+                departmentdancourse[i][0], departmentdancourse[i][1])
+            newarraydept.append(dept)
+        self._depts = newarraydept
         # course1 = Course(
         #     "C1", "325K", [self._instructors[0], self._instructors[1]], 30)
         # course2 = Course("C2", "319K", [
@@ -122,32 +156,12 @@ class Data:
         #     "C6", "303K", [self._instructors[0], self._instructors[2]], 30)
         # course7 = Course(
         #     "C7", "303L", [self._instructors[1], self._instructors[3]], 30)
-
-        for i in range(len(matakuliahdandosen)):
-            course = Course(
-                matakuliahdandosen[i][3], matakuliahdandosen[i][0], matakuliahdandosen[i][1], 30)
-            newarraycourse.append(course)
-            if matakuliahdandosen[i][2] not in kodedepartment:
-                kodedepartment.append(matakuliahdandosen[i][2])
-                departmentdancourse.append(
-                    [matakuliahdandosen[i][2], [course]])
-            else:
-                departindeks = kodedepartment.index(matakuliahdandosen[i][2])
-                if course not in matakuliahdandosen[departindeks][1]:
-                    departmentdancourse[departindeks][1].append(course)
-        self._courses = newarraycourse
         # self._courses = [course1, course2, course3,
         #                  course4, course5, course6, course7]
-
-        for i in range(len(departmentdancourse)):
-            dept = Department(
-                departmentdancourse[i][0], departmentdancourse[i][1])
-            newarraydept.append(dept)
         # dept1 = Department("MATH", [course1, course3])
         # dept2 = Department("EE", [course2, course4, course5])
         # dept3 = Department("PHY", [course6, course7])
         # self._depts = [dept1, dept2, dept3]
-        self._depts = newarraydept
         self._numberOfClasses = 0
         for i in range(0, len(self._depts)):
             self._numberOfClasses += len(self._depts[i].get_courses())

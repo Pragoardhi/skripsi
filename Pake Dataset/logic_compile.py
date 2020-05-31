@@ -10,6 +10,7 @@ totalsemester = 8
 countdosen = 1
 countwaktu = 1
 namadosen = []
+dosen = []
 matakuliah = []
 kelas = []
 waktu = []
@@ -40,7 +41,7 @@ while j < totalsemester:
                 nd = [iddosen]
                 penampungdosen.append(hitung[0])
                 nd.append(hitung[0])
-                namadosen.append(nd)
+                dosen.append(nd)
                 countdosen = countdosen + 1
             if hitung[6] not in penampungkelas:
                 # print('ketemu')
@@ -82,7 +83,7 @@ while j < totalsemester:
     # print(table)
 # print(waktu)
 # print('\n')
-# print(namadosen)
+# print(dosen)
 # print('\n')
 # print(kelas)
 # print('\n')
@@ -93,8 +94,21 @@ while j < totalsemester:
 # print(penampungdosenajar)
 # print('\n')
 # print(matakuliahdandosen)
-
+penampungcourse = []
 for i in range(len(matakuliahdandosen)):
-    idcourse = "C" + str(i)
-    matakuliahdandosen[i].append(idcourse)
-    print(matakuliahdandosen[i], "\n")
+    penampungcourse.append(matakuliahdandosen[i][1])
+for i in range(len(dosen)):
+    namadosen.append(dosen[i][1])
+print(penampungcourse)
+for i in range(len(matakuliahdandosen)):
+    for j in range(len(matakuliahdandosen[i][1])):
+        # print(matakuliahdandosen[i][1][j])
+        if matakuliahdandosen[i][1][j] in namadosen:
+            # print(matakuliahdandosen[i][1][j], namadosen.index(
+            #     matakuliahdandosen[i][1][j]))
+            penandacourse = namadosen.index(matakuliahdandosen[i][1][j])
+            # penampungcourse[j]
+            # penanda = namadosen.index(matakuliahdandosen[i][1][j])
+            # matakuliahdandosen[i][1][j] = "self._instructors" + str(i)
+    # print(matakuliahdandosen[i][1][j])
+    print("\n")
