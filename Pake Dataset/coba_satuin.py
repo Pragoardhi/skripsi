@@ -1,7 +1,10 @@
+from tabulate import tabulate
 import prettytable as prettytable
 import random as rnd
 import pandas as pd
 import numpy as np
+
+
 POPULATION_SIZE = 9
 NUMB_OF_ELITE_SCHEDULES = 1
 TOURNAMENT_SELECTION_SIZE = 3
@@ -37,49 +40,50 @@ while j < totalsemester:
     for i in range(len(arr)):
         hitung = arr[i]
         # semester berapa
-
-        if hitung[0] not in penampungdosen:
-            # print(nd)
-            iddosen = "I" + str(countdosen)
-            nd = [iddosen]
-            penampungdosen.append(hitung[0])
-            nd.append(hitung[0])
-            dosen.append(nd)
-            countdosen = countdosen + 1
-        if hitung[6] not in penampungkelas:
-            # print('ketemu')
-            # print(hitung[6])
-            seat = 30
-            nk = [hitung[6]]
-            penampungkelas.append(hitung[6])
-            nk.append(seat)
-            kelas.append(nk)
-        hari = hitung[3]
-        starttime = hitung[4]
-        endtime = hitung[5]
-        gabungan = hari+' ' + starttime+' - ' + endtime
-        if gabungan not in penampungwaktu:
-            idwaktu = "MT" + str(countwaktu)
-            t = [idwaktu]
-            penampungwaktu.append(gabungan)
-            t.append(gabungan)
-            waktu.append(t)
-            countwaktu = countwaktu + 1
-        k = hitung[8]
-        # cari kode mata kuliah
-        if [hitung[8]] not in kode:
-            kode.append([hitung[8]])
-        # cari matakuliah berdasarkan kode
-        if [hitung[8]] in kode:
-            if [hitung[1]] not in matakuliah:
-                matakuliah.append([hitung[1]])
-                matakuliahdandosen.append(
-                    [hitung[1], [hitung[0]], hitung[8]])
-            else:
-                indeks = matakuliah.index([hitung[1]])
-                if hitung[0] not in matakuliahdandosen[indeks][1]:
-                    matakuliahdandosen[indeks][1].append(hitung[0])
-    table.add_row([arr[i], hitung[0]])
+        if j == 4:
+            if hitung[0] not in penampungdosen:
+                # print(nd)
+                iddosen = "I" + str(countdosen)
+                nd = [iddosen]
+                penampungdosen.append(hitung[0])
+                nd.append(hitung[0])
+                dosen.append(nd)
+                countdosen = countdosen + 1
+            if hitung[6] not in penampungkelas:
+                # print('ketemu')
+                # print(hitung[6])
+                seat = 30
+                nk = [hitung[6]]
+                penampungkelas.append(hitung[6])
+                nk.append(seat)
+                nk.append(hitung[9])
+                kelas.append(nk)
+            hari = hitung[3]
+            starttime = hitung[4]
+            endtime = hitung[5]
+            gabungan = hari+' ' + starttime+' - ' + endtime
+            if gabungan not in penampungwaktu:
+                idwaktu = "MT" + str(countwaktu)
+                t = [idwaktu]
+                penampungwaktu.append(gabungan)
+                t.append(gabungan)
+                waktu.append(t)
+                countwaktu = countwaktu + 1
+            k = hitung[8]
+            # cari kode mata kuliah
+            if [hitung[8]] not in kode:
+                kode.append([hitung[8]])
+            # cari matakuliah berdasarkan kode
+            if [hitung[8]] in kode:
+                if [hitung[1]] not in matakuliah:
+                    matakuliah.append([hitung[1]])
+                    matakuliahdandosen.append(
+                        [hitung[1], [hitung[0]], hitung[8], hitung[9]])
+                else:
+                    indeks = matakuliah.index([hitung[1]])
+                    if hitung[0] not in matakuliahdandosen[indeks][1]:
+                        matakuliahdandosen[indeks][1].append(hitung[0])
+        table.add_row([arr[i], hitung[0]])
 
     j += 1
 for i in range(len(matakuliahdandosen)):
@@ -103,7 +107,8 @@ class Data:
         departmentdancourse = []
         newarraydept = []
         for i in range(0, len(self.ROOMS)):
-            self._rooms.append(Room(self.ROOMS[i][0], self.ROOMS[i][1]))
+            self._rooms.append(
+                Room(self.ROOMS[i][0], self.ROOMS[i][1], self.ROOMS[i][2]))
         for i in range(0, len(self.MEETING_TIMES)):
             self._meetingTimes.append(MeetingTime(
                 self.MEETING_TIMES[i][0], self.MEETING_TIMES[i][1]))
@@ -127,7 +132,7 @@ class Data:
             gabunglistpengajar.append(listpengajar)
         for i in range(len(matakuliahdandosen)):
             course = Course(
-                matakuliahdandosen[i][3], matakuliahdandosen[i][0], gabunglistpengajar[i], 30)
+                matakuliahdandosen[i][4], matakuliahdandosen[i][0], gabunglistpengajar[i], 30, matakuliahdandosen[i][3])
             newarraycourse.append(course)
             if matakuliahdandosen[i][2] not in kodedepartment:
                 kodedepartment.append(matakuliahdandosen[i][2])
@@ -217,6 +222,8 @@ class Schedule:
         for i in range(0, len(classes)):
             if (classes[i].get_room().get_seatingCapacity() < classes[i].get_course().get_maxNumbOfStudents()):
                 self._numbOfConflicts += 1
+            if (classes[i].get_course().get_tipe() != classes[i].get_room().get_tipe()):
+                self._numbOfConflicts += 1
             for j in range(0, len(classes)):
                 if (j >= i):
                     if (classes[i].get_meetingTime() == classes[j].get_meetingTime() and
@@ -298,16 +305,18 @@ class GeneticAlgorithm:
 
 
 class Course:
-    def __init__(self, number, name, instructors, maxNumbOfStudents):
+    def __init__(self, number, name, instructors, maxNumbOfStudents, tipe):
         self._number = number
         self._name = name
         self._maxNumbOfStudents = maxNumbOfStudents
         self._instructors = instructors
+        self._tipe = tipe
 
     def get_number(self): return self._number
     def get_name(self): return self._name
     def get_instructors(self): return self._instructors
     def get_maxNumbOfStudents(self): return self._maxNumbOfStudents
+    def get_tipe(self): return self._tipe
     def __str__(self): return self._name
 
 
@@ -322,10 +331,12 @@ class Instructor:
 
 
 class Room:
-    def __init__(self, number, seatingCapacity):
+    def __init__(self, number, seatingCapacity, tipe):
         self._number = number
         self._seatingCapacity = seatingCapacity
+        self._tipe = tipe
 
+    def get_tipe(self): return self._tipe
     def get_number(self): return self._number
     def get_seatingCapacity(self): return self._seatingCapacity
 
@@ -368,11 +379,6 @@ class Class:
     def set_room(self, room): self._room = room
 
     def __str__(self):
-        # print("department: ", self._dept.get_name())
-        # print("course: ", self._course.get_number())
-        # print("room: ", self._self._room.get_number())
-        # print("instructor: ", self._instructor.get_id())
-        # print("meeting time: ", self._meetingTime.get_id())
         return str(self._dept.get_name()) + "," + str(self._course.get_number()) + "," + \
             str(self._room.get_number()) + "," + str(self._instructor.get_id()
                                                      ) + "," + str(self._meetingTime.get_id())
@@ -390,6 +396,7 @@ class DisplayMgr:
     def print_dept(self):
         depts = data.get_depts()
         availableDeptsTable = prettytable.PrettyTable(['dept', 'courses'])
+        Tabulatedepts = []
         for i in range(0, len(depts)):
             courses = depts.__getitem__(i).get_courses()
             tempStr = "["
@@ -398,12 +405,16 @@ class DisplayMgr:
             tempStr += courses[len(courses) - 1].__str__() + "]"
             availableDeptsTable.add_row(
                 [depts.__getitem__(i).get_name(), tempStr])
+            Tabulatedepts.append(
+                [depts.__getitem__(i).get_name(), tempStr])
         print(availableDeptsTable)
+        # print(tabulate(Tabulatedepts, headers=['dept', 'courses']))
 
     def print_course(self):
         availableCoursesTable = prettytable.PrettyTable(
             ['id', 'course #', 'max # of students', 'instructors'])
         courses = data.get_courses()
+        Tabulatecourse = []
         for i in range(0, len(courses)):
             instructors = courses[i].get_instructors()
             tempStr = ""
@@ -412,7 +423,11 @@ class DisplayMgr:
             tempStr += instructors[len(instructors) - 1].__str__()
             availableCoursesTable.add_row(
                 [courses[i].get_number(), courses[i].get_name(), str(courses[i].get_maxNumbOfStudents()), tempStr])
+            Tabulatecourse.append([courses[i].get_number(), courses[i].get_name(), str(
+                courses[i].get_maxNumbOfStudents()), tempStr])
         print(availableCoursesTable)
+        # print(tabulate(Tabulatecourse, headers=[
+        #       'id', 'course #', 'max # of students', 'instructors']))
 
     def print_instructor(self):
         availableInstructorsTable = prettytable.PrettyTable(
@@ -425,11 +440,11 @@ class DisplayMgr:
 
     def print_room(self):
         availableRoomsTable = prettytable.PrettyTable(
-            ['room #', 'max seating capacity'])
+            ['room #', 'max seating capacity', 'type'])
         rooms = data.get_rooms()
         for i in range(0, len(rooms)):
             availableRoomsTable.add_row(
-                [str(rooms[i].get_number()), str(rooms[i].get_seatingCapacity())])
+                [str(rooms[i].get_number()), str(rooms[i].get_seatingCapacity()), rooms[i].get_tipe()])
         print(availableRoomsTable)
 
     def print_meeting_times(self):
@@ -479,9 +494,12 @@ displayMgr.print_schedule_as_table(population.get_schedules()[0])
 geneticAlgorithm = GeneticAlgorithm()
 while (population.get_schedules()[0].get_fitness() != 1.0):
     generationNumber += 1
-    print("\n> Generation # " + str(generationNumber))
+    # print("\n> Generation # " + str(generationNumber))
     population = geneticAlgorithm.evolve(population)
     population.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
-    displayMgr.print_generation(population)
-    displayMgr.print_schedule_as_table(population.get_schedules()[0])
+    # displayMgr.print_generation(population)
+    # displayMgr.print_schedule_as_table(population.get_schedules()[0])
 print("\n\n")
+print("\n> Generation # " + str(generationNumber))
+displayMgr.print_generation(population)
+displayMgr.print_schedule_as_table(population.get_schedules()[0])

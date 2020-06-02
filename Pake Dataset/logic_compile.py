@@ -9,7 +9,6 @@ j = 1
 totalsemester = 8
 countdosen = 1
 countwaktu = 1
-namadosen = []
 dosen = []
 matakuliah = []
 kelas = []
@@ -34,6 +33,7 @@ while j < totalsemester:
     for i in range(len(arr)):
         hitung = arr[i]
         # semester berapa
+
         if hitung[0] not in penampungdosen:
             # print(nd)
             iddosen = "I" + str(countdosen)
@@ -49,6 +49,7 @@ while j < totalsemester:
             nk = [hitung[6]]
             penampungkelas.append(hitung[6])
             nk.append(seat)
+            nk.append(hitung[9])
             kelas.append(nk)
         hari = hitung[3]
         starttime = hitung[4]
@@ -70,19 +71,23 @@ while j < totalsemester:
             if [hitung[1]] not in matakuliah:
                 matakuliah.append([hitung[1]])
                 matakuliahdandosen.append(
-                    [hitung[1], [hitung[0]], hitung[8]])
+                    [hitung[1], [hitung[0]], hitung[8], hitung[9]])
             else:
                 indeks = matakuliah.index([hitung[1]])
                 if hitung[0] not in matakuliahdandosen[indeks][1]:
                     matakuliahdandosen[indeks][1].append(hitung[0])
     table.add_row([arr[i], hitung[0]])
 
-    # print(table)
+    j += 1
+for i in range(len(matakuliahdandosen)):
+    idcourse = "C" + str(i)
+    matakuliahdandosen[i].append(idcourse)
+# print(table)
 # print(waktu)
 # print('\n')
 # print(dosen)
 # print('\n')
-# print(kelas)
+print(kelas)
 # print('\n')
 # print(kode)
 # print('\n')
