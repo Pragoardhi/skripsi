@@ -12,6 +12,8 @@ MUTATION_RATE = 0.1
 
 df = pd.read_excel(
     'D:\Kuliah\Skripsi\skripsi\Pake Dataset\dataset\Data.xlsx')
+dw = pd.read_excel(
+    'D:\Kuliah\Skripsi\skripsi\Pake Dataset\dataset\TetapanWaktu.xlsx')
 j = 1
 totalsemester = 8
 countdosen = 1
@@ -58,18 +60,19 @@ while j < totalsemester:
                 nk.append(seat)
                 nk.append(hitung[9])
                 kelas.append(nk)
-            hari = hitung[3]
-            starttime = hitung[4]
-            endtime = hitung[5]
-            gabungan = hari+' ' + starttime+' - ' + endtime
-            if gabungan not in penampungwaktu:
-                idwaktu = "MT" + str(countwaktu)
-                t = [idwaktu]
-                penampungwaktu.append(gabungan)
-                t.append(gabungan)
-                waktu.append(t)
-                countwaktu = countwaktu + 1
-            k = hitung[8]
+            # hari = hitung[3]
+            # starttime = hitung[4]
+            # endtime = hitung[5]
+            # gabungan = hari+' ' + starttime+' - ' + endtime
+            # if gabungan not in penampungwaktu:
+            #     idwaktu = "MT" + str(countwaktu)
+            #     t = [idwaktu]
+            #     penampungwaktu.append(gabungan)
+            #     t.append(gabungan)
+            #     t.append(hitung[10])
+            #     waktu.append(t)
+            #     countwaktu = countwaktu + 1
+            # k = hitung[8]
             # cari kode mata kuliah
             if [hitung[8]] not in kode:
                 kode.append([hitung[8]])
@@ -78,7 +81,7 @@ while j < totalsemester:
                 if [hitung[1]] not in matakuliah:
                     matakuliah.append([hitung[1]])
                     matakuliahdandosen.append(
-                        [hitung[1], [hitung[0]], hitung[8], hitung[9]])
+                        [hitung[1], [hitung[0]], hitung[8], hitung[9], hitung[10]])
                 else:
                     indeks = matakuliah.index([hitung[1]])
                     if hitung[0] not in matakuliahdandosen[indeks][1]:
@@ -89,6 +92,28 @@ while j < totalsemester:
 for i in range(len(matakuliahdandosen)):
     idcourse = "C" + str(i)
     matakuliahdandosen[i].append(idcourse)
+
+dw.dropna()
+datawaktu = dw.values.tolist()
+
+for i in range(len(datawaktu)):
+    hitung = datawaktu[i]
+    hari = hitung[0]
+    starttime = hitung[1]
+    endtime = hitung[2]
+    sks = hitung[3]
+    gabungan = hari+' ' + str(starttime)+':00 - ' + str(endtime) + ':00'
+    if gabungan not in penampungwaktu:
+        idwaktu = "MT" + str(countwaktu)
+        t = [idwaktu]
+        penampungwaktu.append(gabungan)
+        t.append(gabungan)
+        t.append(sks)
+        t.append(starttime)
+        t.append(endtime)
+        t.append(hari)
+        waktu.append(t)
+        countwaktu = countwaktu + 1
 
 
 class Data:
@@ -111,7 +136,7 @@ class Data:
                 Room(self.ROOMS[i][0], self.ROOMS[i][1], self.ROOMS[i][2]))
         for i in range(0, len(self.MEETING_TIMES)):
             self._meetingTimes.append(MeetingTime(
-                self.MEETING_TIMES[i][0], self.MEETING_TIMES[i][1]))
+                self.MEETING_TIMES[i][0], self.MEETING_TIMES[i][1], self.MEETING_TIMES[i][2], self.MEETING_TIMES[i][2], self.MEETING_TIMES[i][3], self.MEETING_TIMES[i][4]))
         for i in range(0, len(self.INSTRUCTORS)):
             self._instructors.append(Instructor(
                 self.INSTRUCTORS[i][0], self.INSTRUCTORS[i][1]))
@@ -132,7 +157,7 @@ class Data:
             gabunglistpengajar.append(listpengajar)
         for i in range(len(matakuliahdandosen)):
             course = Course(
-                matakuliahdandosen[i][4], matakuliahdandosen[i][0], gabunglistpengajar[i], 30, matakuliahdandosen[i][3])
+                matakuliahdandosen[i][5], matakuliahdandosen[i][0], gabunglistpengajar[i], 30, matakuliahdandosen[i][3], matakuliahdandosen[i][4])
             newarraycourse.append(course)
             if matakuliahdandosen[i][2] not in kodedepartment:
                 kodedepartment.append(matakuliahdandosen[i][2])
@@ -224,6 +249,8 @@ class Schedule:
                 self._numbOfConflicts += 1
             if (classes[i].get_course().get_tipe() != classes[i].get_room().get_tipe()):
                 self._numbOfConflicts += 1
+            if (classes[i].get_course().get_sks() != classes[i].get_meetingTime().get_sks()):
+                self._numbOfConflicts += 1
             for j in range(0, len(classes)):
                 if (j >= i):
                     if (classes[i].get_meetingTime() == classes[j].get_meetingTime() and
@@ -232,6 +259,11 @@ class Schedule:
                             self._numbOfConflicts += 1
                         if (classes[i].get_instructor() == classes[j].get_instructor()):
                             self._numbOfConflicts += 1
+                    if (classes[i].get_instructor() == classes[j].get_instructor() and classes[i].get_id() != classes[j].get_id()):
+                        if (classes[i].get_meetingTime() != classes[j].get_meetingTime):
+                            if(classes[i].get_meetingTime().get_end() > classes[j].get_meetingTime().get_start() and classes[i].get_meetingTime().get_day() == classes[j].get_meetingTime().get_day()):
+                                self._numbOfConflicts += 1
+
         return 1 / ((1.0*self._numbOfConflicts + 1))
 
     def __str__(self):
@@ -305,13 +337,15 @@ class GeneticAlgorithm:
 
 
 class Course:
-    def __init__(self, number, name, instructors, maxNumbOfStudents, tipe):
+    def __init__(self, number, name, instructors, maxNumbOfStudents, tipe, sks):
         self._number = number
         self._name = name
         self._maxNumbOfStudents = maxNumbOfStudents
         self._instructors = instructors
         self._tipe = tipe
+        self._sks = sks
 
+    def get_sks(self): return self._sks
     def get_number(self): return self._number
     def get_name(self): return self._name
     def get_instructors(self): return self._instructors
@@ -342,10 +376,18 @@ class Room:
 
 
 class MeetingTime:
-    def __init__(self, id, time):
+    def __init__(self, id, time, sks, start, end, day):
+        self._day = day
+        self._start = start
+        self._end = end
+        self._sks = sks
         self._id = id
         self._time = time
 
+    def get_day(self): return self._day
+    def get_start(self): return self._start
+    def get_end(self): return self._end
+    def get_sks(self): return self._sks
     def get_id(self): return self._id
     def get_time(self): return self._time
 
@@ -468,12 +510,12 @@ class DisplayMgr:
     def print_schedule_as_table(self, schedule):
         classes = schedule.get_classes()
         table = prettytable.PrettyTable(
-            ['Class #', 'Dept', 'Course (number, max # of students)', 'Room (Capacity)', 'Instructor (Id)',  'Meeting Time (Id)'])
+            ['Class #', 'Dept', 'Course (number, max # of students, sks)', 'Room (Capacity)', 'Instructor (Id)',  'Meeting Time (Id)'])
         for i in range(0, len(classes)):
             table.add_row([str(i), classes[i].get_dept().get_name(), classes[i].get_course().get_name() + " (" +
                            classes[i].get_course().get_number() + ", " +
                            str(classes[i].get_course(
-                           ).get_maxNumbOfStudents()) + ")",
+                           ).get_maxNumbOfStudents()) + ", " + str(classes[i].get_course().get_sks()) + ")",
                            classes[i].get_room().get_number(
             ) + " (" + str(classes[i].get_room().get_seatingCapacity()) + ")",
                 classes[i].get_instructor().get_name(
