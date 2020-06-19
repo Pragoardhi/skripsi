@@ -27,6 +27,7 @@ penampungmatakuliah = []
 penampungdosen = []
 penampungdosenajar = []
 matakuliahdandosen = []
+dictionarydosen = {}
 while j < totalsemester:
     table = prettytable.PrettyTable(
         ['Semester ' + str(j), 'Nama dosen'])
@@ -35,7 +36,7 @@ while j < totalsemester:
     for i in range(len(arr)):
         hitung = arr[i]
         # semester berapa
-        if j == 4:
+        if j == 1:
             if hitung[0] not in penampungdosen:
                 # print(nd)
                 iddosen = "I" + str(countdosen)
@@ -70,17 +71,26 @@ while j < totalsemester:
             if [hitung[8]] not in kode:
                 kode.append([hitung[8]])
             # cari matakuliah berdasarkan kode
+            # if [hitung[8]] in kode:
+            #     if [hitung[1]] not in matakuliah:
+            #         matakuliah.append([hitung[1]+" " + hitung[2]])
+            #         matakuliahdandosen.append(
+            #             [hitung[1]+" " + hitung[2], [hitung[0]], hitung[8], hitung[9], hitung[10], hitung[7]])
+            #     else:
+            #         indeks = matakuliah.index([hitung[1]])
+            #         if hitung[0] not in matakuliahdandosen[indeks][1]:
+            #             matakuliahdandosen[indeks][1].append(hitung[0])
             if [hitung[8]] in kode:
-                if [hitung[1]] not in matakuliah:
-                    matakuliah.append([hitung[1]])
-                    matakuliahdandosen.append(
-                        [hitung[1], [hitung[0]], hitung[8], hitung[9], hitung[10]])
-                else:
-                    indeks = matakuliah.index([hitung[1]])
-                    if hitung[0] not in matakuliahdandosen[indeks][1]:
-                        matakuliahdandosen[indeks][1].append(hitung[0])
-        table.add_row([arr[i], hitung[0]])
+                temp = str(hitung[1])
+                matakuliahdandosen.append(
+                    [temp, [], hitung[8], hitung[9], hitung[10], hitung[7], hitung[2]])
+                if hitung[1] not in dictionarydosen:
+                    dictionarydosen[hitung[1]] = [hitung[0]]
+                elif hitung[0] not in dictionarydosen[hitung[1]]:
+                    dictionarydosen[hitung[1]].append(hitung[0])
 
+        table.add_row([arr[i], hitung[0]])
+    # print(table)
     j += 1
 for i in range(len(matakuliahdandosen)):
     idcourse = "C" + str(i)
@@ -107,7 +117,15 @@ for i in range(len(datawaktu)):
         t.append(hari)
         waktu.append(t)
         countwaktu = countwaktu + 1
-
+iterator = 0
+indeks = 0
+while iterator < len(matakuliahdandosen):
+    for key, value in dictionarydosen.items():
+        if key in matakuliahdandosen[iterator][0]:
+            kunci = key
+            break
+    matakuliahdandosen[iterator][1] = dictionarydosen[kunci]
+    iterator = iterator + 1
 # print(datawaktu)
 # for i in range(len(datawaktu)):
 # print(datawaktu[i][0])
@@ -125,7 +143,6 @@ print(waktu)
 # print(penampungdosenajar)
 # print('\n')
 # print(matakuliahdandosen)
-
 # gabunglistpengajar = []
 # for i in range(len(dosen)):
 #     namadosen.append(dosen[i][1])
@@ -137,3 +154,6 @@ print(waktu)
 #             penandacourse = namadosen.index(matakuliahdandosen[i][1][j])
 #             listpengajar.append(self._instructors[penandacourse])
 #     gabunglistpengajar.append(listpengajar)
+# print(dictionarydosen)
+# for i in range(len(matakuliahdandosen)):
+#     print(matakuliahdandosen[i], "\n")
